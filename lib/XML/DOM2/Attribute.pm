@@ -1,11 +1,28 @@
 package XML::DOM2::Attribute;
 
+=head1 NAME
+
+  XML::DOM2::Attribute
+
+=head1 DESCRIPTION
+
+  Attribute object class for XML documents
+
+=head1 METHODS
+
+=cut
+
 use base "XML::DOM2::DOM::Attribute";
 
 use strict;
 use warnings;
 use Carp;
 
+=head2 $class->new( %options )
+
+  Create a new Attribute object.
+
+=cut
 sub new
 {
 	my ($proto, %opts) = @_;
@@ -17,11 +34,9 @@ sub new
 	return $self;
 }
 
-=head2 value
+=head2 $attribute->value()
 
-$value = $attribute->value;
-
-Returns the serialised value within this attribute.
+  Returns the serialised value within this attribute.
 
 =cut
 sub value
@@ -30,11 +45,9 @@ sub value
 	return $self->serialise;
 }
 
-=head2 serialise
+=head2 $attribute->serialise()
 
-$value = $attribute->serialise;
-
-Returns the serialised value for this attribute.
+  Returns the serialised value for this attribute.
 
 =cut
 sub serialise
@@ -43,11 +56,9 @@ sub serialise
 	return $self->{'value'};
 }
 
-=head2 deserialise
+=head2 $attribute->deserialise( $value )
 
-$attribute->deserialise($value);
-
-Sets the attribute value to $value, does any deserialisation too.
+  Sets the attribute value to $value, does any deserialisation too.
 
 =cut
 sub deserialise
@@ -56,11 +67,9 @@ sub deserialise
 	$self->{'value'} = $value;
 }
 
-=head2 serialise_full
+=head2 $attribute->serialise_full()
 
-$attr = $attribute->serialise_full;
-
-Returns the serialised name and value for this attribute.
+  Returns the serialised name and value for this attribute.
 
 =cut
 sub serialise_full
@@ -71,6 +80,11 @@ sub serialise_full
 	return $self->name.'="'.$value.'"';
 } 
 
+=head2 $attribute->document()
+
+  Return the document associated with this attribute.
+
+=cut
 sub document
 {
 	my ($self) = @_;
@@ -79,6 +93,20 @@ sub document
 	return $self->ownerElement->document;
 }
 
+=head2 $attribute->delete()
+
+  Delete this attribute, NOT IMPLIMENTED.
+
+=cut
 sub delete {}
 
-return 1;
+=head1 COPYRIGHT
+
+Martin Owens, doctormo@cpan.org
+
+=head1 SEE ALSO
+
+L<XML::DOM2>,L<XML::DOM2::DOM::Attribute>
+
+=cut
+1;

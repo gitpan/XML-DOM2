@@ -3,16 +3,26 @@ package XML::DOM2::DOM::Document;
 use strict;
 use warnings;
 
+=head1 NAME
+
+  XML::DOM2::DOM::Document
+
+=head1 DESCRIPTION
+
+  Base class for document objects, extends the DOM with document specific methods.
+
+=head1 METHODS
+
+=cut
+
 use XML::DOM2::Element::DocumentType;
 use XML::DOM2::Attribute::Namespace;
 use XML::DOM2;
 use Carp;
 
-=head2 createDocumentType
+=head2 $class->createDocumentType( $qualifiedName, $publicId, $systemId, $dtd )
 
-$doctype = XML::DOM2::Type->new( $qualifiedName, $publicId, $systemId );
-
-Create a new XML Document Type.
+  Create a new XML Document Type.
 
 =cut
 sub createDocumentType
@@ -27,11 +37,9 @@ sub createDocumentType
 	return $doctype;
 }
 
-=head2 createDocument
+=head2 $class->createDocument( $namespaceURI, $qualifiedName, $doctype )
 
-$xml = XML::DOM2->new( $namespaceURI, $qualifiedName, $doctype );
-
-Creates a new XML Document.
+  Creates a new XML Document.
 
 =cut
 sub createDocument
@@ -48,17 +56,15 @@ sub createDocument
 	return $document;
 }
 
-=head2 documentElement
+=head2 $document->documentElement()
 
-$element = $xml->documentElement;
-
-Returns the main document element.
+  Returns the main document element.
 
 =cut
 sub documentElement
 {
-    my ($self, $setObj) = @_;
-    if(not $self->{'element'}) {
+	my ($self, $setObj) = @_;
+	if(not $self->{'element'}) {
 		if($setObj) {
 			confess "New Document element has no tag name" if not $setObj->localName;
 			$self->{'element'} = $setObj;
@@ -75,15 +81,13 @@ sub documentElement
 				$self->{'element'}->setAttribute( 'xmlns', $self->{'namespace'} );
 			} 
 		}
-    }
-    return $self->{'element'};
+	}
+	return $self->{'element'};
 }
 
-=head2 documentType
+=head2 $document->documentType()
 
-$doctype = $xml->documentType;
-
-Returns a document type object for this document.
+  Returns a document type object for this document.
 
 =cut
 sub documentType
@@ -92,101 +96,91 @@ sub documentType
 	return $self->{'doctype'};
 }
 
-=head2 addID
+=head2 $document->addID( $id, $element )
 
-$document->addID($id, $element);
-
-Adds an id of an element, used internaly.
+  Adds an id of an element, used internaly.
 
 =cut
 sub addID
 {
-    my ($self, $id, $tag) = @_;
-    if(not defined($self->{'idlist'})) {
-        $self->{'idlist'} = {};
-    }
-    if(not defined($self->{'idlist'}->{$id})) {
-        $self->{'idlist'}->{$id} = $tag;
-        return 1;
-    }
-    return undef;
+	my ($self, $id, $tag) = @_;
+	if(not defined($self->{'idlist'})) {
+	    $self->{'idlist'} = {};
+	}
+	if(not defined($self->{'idlist'}->{$id})) {
+	    $self->{'idlist'}->{$id} = $tag;
+	    return 1;
+	}
+	return undef;
 }
 
-=head2 removeID
+=head2 $document->removeID( $id )
 
-$document->removeID($id);
-
-Removes an id of an element, used internaly.
+  Removes an id of an element, used internaly.
 
 =cut
 sub removeID
 {
-    my ($self, $id) = @_;
-    return delete($self->{'idlist'}->{$id});
+	my ($self, $id) = @_;
+	return delete($self->{'idlist'}->{$id});
 }
 
-=head2 getElementByID
+=head2 $document->getElementByID( $id )
 
-my $element = $document->getElementByID($id);
-
-Returns the element with that id in this document.
+  Returns the element with that id in this document.
 
 =cut
 sub getElementByID
 {
-    my ($self, $id)=@_;
-    return undef unless defined($id);
-    my $idlist = $self->{'idlist'};
-    if (exists $idlist->{$id}) {
-        return $idlist->{$id};
-    }
-    return undef;
+	my ($self, $id)=@_;
+	return undef unless defined($id);
+	my $idlist = $self->{'idlist'};
+	if (exists $idlist->{$id}) {
+	    return $idlist->{$id};
+	}
+	return undef;
 }
 
-=head2 addElement
+=head2 $document->addElement( $element )
 
-$document->addElement($element);
-
-Adds an element to the elements list, used internaly.
+  Adds an element to the elements list, used internaly.
 
 =cut
 sub addElement
 {
-    my ($self, $tag) = @_;
-    my $name = $tag->localName;
-    if(not defined($self->{'elist'})) {
-        $self->{'elist'} = {};
-    }
-    if(not defined($self->{'elist'}->{$name})) {
-        $self->{'elist'}->{$name} = [];
-    }
-    $tag->{'tagindex'} = @{$self->{'elist'}->{$name}};
-    push @{$self->{'elist'}->{$name}}, $tag;
-    return 1;
+	my ($self, $tag) = @_;
+	my $name = $tag->localName;
+	if(not defined($self->{'elist'})) {
+	    $self->{'elist'} = {};
+	}
+	if(not defined($self->{'elist'}->{$name})) {
+	    $self->{'elist'}->{$name} = [];
+	}
+	$tag->{'tagindex'} = @{$self->{'elist'}->{$name}};
+	push @{$self->{'elist'}->{$name}}, $tag;
+	return 1;
 }
 
-=head2 removeElement
+=head2 $document->removeElement( $element )
 
-$document->removeElement($element);
-
-Remove the specified element from the elements list, used internaly.
+  Remove the specified element from the elements list, used internaly.
 
 =cut
 sub removeElement
 {
-    my ($self, $tag) = @_;
-    my $name = $tag->getElementName;
-    splice @{$self->{'elist'}->{$name}}, $tag->{'tagindex'}, 1;
+	my ($self, $tag) = @_;
+	my $name = $tag->getElementName;
+	splice @{$self->{'elist'}->{$name}}, $tag->{'tagindex'}, 1;
 	# Remove the elist name if no nodes;
 	# this keeps getElementNames function consistant
 	delete($self->{'elist'}->{$name}) unless @{$self->{'elist'}->{$name}};
 }
 
-=head2 getElements
+=head2 $document->getElements( $type )
+=head2 $document->getElementsByType( $type )
+=head2 $document->getElementsByName( $type )
 
-@elements = $document->getElements($type);
-
-Get all elements of the specified type/tagName; if none is specified, get all elements in document.
+  Get all elements of the specified type/tagName; if none is specified, get all elements in document.
 
 =cut
 sub getElements
@@ -213,27 +207,24 @@ sub getElements
 *getElementsByType=\&getElements;
 *getElementsByName=\&getElements;
 
-=head2 getElementNames
+=head2 $document->getElementNames()
+=head2 $document->getElementTypes()
 
-@elementNames = $document->getElementNames($type);
-
-Get all the element types in use in the document.
+  Get all the element types in use in the document.
 
 =cut
 sub getElementNames
 {
-    my $self = shift;
-    my @types = keys %{$self->{'elist'}};
+	my $self = shift;
+	my @types = keys %{$self->{'elist'}};
 
-    return wantarray ? @types : \@types;
+	return wantarray ? @types : \@types;
 }
 *getElementTypes=\&getElementNames;
 
-=head2 addDefinition
+=head2 $document->addDefinition( $def )
 
-$document->addDefinition($def);
-
-Add a definition to the document.
+  Add a definition to the document.
 
 =cut
 sub addDefinition
@@ -244,11 +235,9 @@ sub addDefinition
 	return $self;
 }
 
-=head2 definitions
+=head2 $document->definitions( )
 
-@defs = $document->definitions;
-
-Return all definitions in document.
+  Return all definitions in document.
 
 =cut
 sub definitions
@@ -257,9 +246,9 @@ sub definitions
 	return $self->{'defs'} || [];
 }
 
-=head2 getNamespace
+=head2 $document->getNamespace( $uri )
 
-Return a namespace based on the uri or prefix.
+  Return a namespace based on the uri or prefix.
 
 =cut
 sub getNamespace
@@ -277,11 +266,9 @@ sub getNamespace
 	return $self->{'xmlns'}->{$uri};
 }
 
-=head2 createNamespace
+=head2 $document->createNamespace( $prefix, $uri )
 
-$document->createNamespace( $prefix, $uri );
-
-Create a new namespace within this document.
+  Create a new namespace within this document.
 
 =cut 
 sub createNamespace
@@ -296,6 +283,11 @@ sub createNamespace
 	return $ns;
 }
 
+=head2 $document->addNamespace( $namespace )
+
+  Add namespace to this document.
+
+=cut
 sub addNamespace
 {
 	my ($self, $namespace) = @_;
@@ -303,6 +295,11 @@ sub addNamespace
 	$self->{'xmlns'}->{$namespace->ns_uri} = $namespace;
 }
 
+=head2 $document->removeNamespace( $namespace )
+
+  Remove a namespace from this document.
+
+=cut
 sub removeNamespace
 {
 	my ($self, $namespace) = @_;
@@ -310,9 +307,9 @@ sub removeNamespace
 	delete($self->{'xmlns'}->{$namespace->ns_uri});
 }
 
-=head2 createElement
+=head2 $document->createElement( $name, %options )
 
-Creates a new element of type name.
+  Creates a new element of type name.
 
 =cut
 sub createElement
@@ -323,9 +320,9 @@ sub createElement
 	return $element;
 	}
 
-=head2 createElementNS
+=head2 $document->createElementNS( $namespace, $name, %options )
 
-Create an element in a namespace.
+  Create an element in a namespace.
 
 =cut
 sub createElementNS
@@ -341,9 +338,9 @@ sub createElementNS
 	return $element;
 }
 
-=head2 createTextNode
+=head2 $document->createTextNode( $data )
 
-Create a textnode element.
+  Create a textnode element.
 
 =cut 
 sub createTextNode
@@ -352,9 +349,9 @@ sub createTextNode
 	return $self->_element_handle( '#cdata-entity', notag => 1 );
 }
 
-=head2 createComment
+=head2 $document->createComment( $data )
 
-Create a comment element
+  Create a comment element
 
 =cut 
 sub createComment
@@ -363,9 +360,9 @@ sub createComment
 	return $self->_element_handle( '#comment', text => $data ); 
 }
 
-=head2 createCDATASection
+=head2 $document->createCDATASection( $data )
 
-create a CDATA element.
+  create a CDATA element.
 
 =cut 
 sub createCDATASection
@@ -374,4 +371,13 @@ sub createCDATASection
 	return $self->_element_handle( '#cdata-entity',	notag => 0 );
 }
 
-return 1;
+=head1 COPYRIGHT
+
+Martin Owens, doctormo@cpan.org
+
+=head1 SEE ALSO
+
+L<XML::DOM2>
+
+=cut
+1;

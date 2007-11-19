@@ -1,12 +1,5 @@
 package XML::DOM2::DOM::Element;
 
-use base "XML::DOM2::DOM::NameSpace";
-
-use strict;
-use Carp;
-
-=pod
-
 =head1 NAME
 
 XML::DOM2::DOM::Element - A library of DOM (Document Object Model) methods for XML Elements.
@@ -17,11 +10,17 @@ Provides all the DOM method for XML Elements
 
 =head1 METHODS
 
-=head2 getFirstChild
+=cut
 
-$child = $element->getFirstChild;
+use base "XML::DOM2::DOM::NameSpace";
 
-Returns the elements first child in it's children list
+use strict;
+use Carp;
+
+=head2 $element->getFirstChild()
+=head2 $element->firstChild()
+
+  Returns the elements first child in it's children list
 
 =cut
 sub getFirstChild ($) {
@@ -34,11 +33,10 @@ sub getFirstChild ($) {
 }
 *firstChild=\&getFirstChild;
 
-=head2 getLastChild
+=head2 $element->getLastChild()
+=head2 $element->lastChild()
 
-$child = $element->getLastChild;
-
-Returns the elements last child in it's children list
+  Returns the elements last child in it's children list
 
 =cut
 sub getLastChild ($) {
@@ -52,11 +50,9 @@ sub getLastChild ($) {
 }
 *lastChild=\&getLastChild;
 
-=head2 getChildIndex
+=head2 $element->getChildIndex( @children )
 
-$index = $child->getChildIndex;
-
-Return the array index of this element in the parent or the passed list (if there is one).
+  Return the array index of this element in the parent or the passed list (if there is one).
 
 =cut
 sub getChildIndex ($;@) {
@@ -75,11 +71,9 @@ sub getChildIndex ($;@) {
     return undef;
 }
 
-=head2 getChildAtIndex
+=head2 $element->getChildAtIndex( $index )
 
-$child = $element->getChildAtIndex($index);
-
-Return the element at the specified index (the index can be negative).
+  Return the element at the specified index (the index can be negative).
 
 =cut
 sub getChildAtIndex ($$;@) {
@@ -94,11 +88,10 @@ sub getChildAtIndex ($$;@) {
     return $children[$index];
 }
 
-=head2 getNextSibling
+=head2 $element->getNextSibling()
+=head2 $element->nextSibling()
 
-$sibling = $element->getNextSibling;
-
-Return the next element to this element in the parents child list.
+  Return the next element to this element in the parents child list.
 
 =cut
 sub getNextSibling ($) {
@@ -115,11 +108,10 @@ sub getNextSibling ($) {
 }
 *nextSibling=\&getNextSibling;
 
-=head2 getPreviousSibling
+=head2 $element->getPreviousSibling()
+=head2 $element->previousSibling()
 
-$sibling = $element->getPreviousSibling;
-
-Return the previous element to this element in the parents child list.
+  Return the previous element to this element in the parents child list.
 
 =cut
 sub getPreviousSibling ($) {
@@ -137,11 +129,11 @@ sub getPreviousSibling ($) {
 }
 *previousSibling=\&getPreviousSibling;
 
-=head2 getChildren
+=head2 $element->getChildren()
+=head2 $element->getChildElements()
+=head2 $element->getChildNodes()
 
-@children = $element->getChildren;
-
-Returns all the elements children.
+  Returns all the elements children.
 
 =cut
 sub getChildren ($) {
@@ -154,11 +146,9 @@ sub getChildren ($) {
 *getChildElements=\&getChildren;
 *getChildNodes=\&getChildren;
 
-=head2 getChildrenByName
+=head2 $element->getChildrenByName( $name )
 
-@children = $element->getChildrenByName;
-
-Returns all the elements children with that tag name (including namespace prefix).
+  Returns all the elements children with that tag name (including namespace prefix).
 
 =cut
 sub getChildrenByName
@@ -169,11 +159,11 @@ sub getChildrenByName
 	}
 }
 
-=head2 hasChildren
+=head2 $element->hasChildren()
+=head2 $element->hasChildElements()
+=head2 $element->hasChildNodes()
 
-$bool = $element->hasChildren;
-
-Returns 1 if this element has children.
+  Returns 1 if this element has children.
 
 =cut
 sub hasChildren ($) {
@@ -190,11 +180,11 @@ sub hasChildren ($) {
 *hasChildElements=\&hasChildren;
 *hasChildNodes=\&hasChildren;
 
-=head2 getParent / getParentElement
+=head2 $element->getParent()
+=head2 $element->getParentElement()
+=head2 $element->getParentNode()
 
-$parent = $element->getParent;
-
-Returns the object of the parent element.
+  Returns the object of the parent element.
 
 =cut
 sub getParent ($) {
@@ -209,7 +199,8 @@ sub getParent ($) {
 *getParentElement=\&getParent;
 *getParentNode=\&getParent;
 
-=head2 setParent / setParentElement
+=head2 $element->setParent( $element )
+=head2 $element->setParentElement( $element )
 
 $element->setParent($parent);
 
@@ -228,12 +219,13 @@ sub setParent ($$) {
 }
 *setParentElement=\&setParent;
 
-=head2 getParents / getParentElements
+=head2 $element->getParents()
+=head2 $element->getParentElements()
+=head2 $element->getParentNodes()
+=head2 $element->getAncestors()
 
-@parents = $element->getParents;
-
-Return a list of the parents of the current element, starting from the immediate parent. The
-last member of the list should be the document element.
+  Return a list of the parents of the current element, starting from the immediate parent. The
+  last member of the list should be the document element.
 
 =cut
 sub getParents {
@@ -254,11 +246,9 @@ sub getParents {
 *getParentNodes=\&getParents;
 *getAncestors=\&getParents;
 
-=head2 isAncestor
+=head2 $element->isAncestor( $node )
 
-$bool = $element->isAncestor($descendant);
-
-Returns true if the current element is an ancestor of the descendant element.
+  Returns true if the current element is an ancestor of the descendant element.
 
 =cut
 sub isAncestor ($$) {
@@ -272,11 +262,9 @@ sub isAncestor ($$) {
     return 0;
 }
 
-=head2 isDescendant
+=head2 $element->isDescendant( $node )
 
-$bool = $element->isDescendant($ancestor);
-
-Return true if the crrent element is the descendant of the ancestor element.
+  Return true if the crrent element is the descendant of the ancestor element.
 
 =cut
 sub isDescendant ($$) {
@@ -290,11 +278,9 @@ sub isDescendant ($$) {
     return 0;
 }
 
-=head getSiblings
+=head2 $element->getSiblings()
 
-@siblings = $element->getSiblings;
-
-Returns a list of sibling elements.
+  Returns a list of sibling elements.
 
 =cut
 sub getSiblings ($) {
@@ -307,11 +293,9 @@ sub getSiblings ($) {
     return wantarray?():undef;
 }
 
-=head2 hasSiblings
+=head2 $element->hasSiblings()
 
-$bool = $element->hasSiblings;
-
-Returns true if the elements has sibling elements.
+  Returns true if the elements has sibling elements.
 
 =cut
 sub hasSiblings ($) {
@@ -325,11 +309,15 @@ sub hasSiblings ($) {
     return undef;
 }
 
-=head2 getElementName
+=head2 $element->getElementName()
+=head2 $element->getElementType()
+=head2 $element->getType()
+=head2 $element->getTagName()
+=head2 $element->getTagType()
+=head2 $element->getNodeName()
+=head2 $element->getNodeType()
 
-$name = $element->getElementName;
-
-Return a string containing the name (i.e. the type, not the ID) of an element.
+  Return a string containing the name (i.e. the type, not the ID) of an element.
 
 =cut
 sub getElementName ($) {
@@ -344,11 +332,9 @@ sub getElementName ($) {
 *getNodeName=\&getElementName;
 *getNodeType=\&getElementName;
 
-=head2 getElementID
+=head2 $element->getElementID()
 
-$name = $element->getElementID;
-
-Return a string containing the elements ID (unique identifier string).
+  Return a string containing the elements ID (unique identifier string).
 
 =cut
 sub getElementID ($) {
@@ -361,12 +347,10 @@ sub getElementID ($) {
     return undef;
 }
 
-=head2 getAttribute
+=head2 $element->getAttribute( $attributeName )
 
-$attribute = $element->getAttribute($attributeName, $ns, $serialise);
-
-Returns the specified attribute in the element, will return a
-serialised string instead of posible attribute object if serialise set.
+  Returns the specified attribute in the element, will return a
+  serialised string instead of posible attribute object if serialise set.
 
 =cut
 sub getAttribute
@@ -376,11 +360,9 @@ sub getAttribute
 	return $attribute;
 }
 
-=head2 getAttributes
+=head2 $element->getAttributes( $serialise, $ns )
 
-@attributes = $element->getAttributes( [$serialise] );
-
-Returns a list of attributes in various forms.
+  Returns a list of attributes in various forms.
 
 =cut
 sub getAttributes
@@ -418,11 +400,9 @@ sub getAttributes
 	}
 }
 
-=head2 getAttributeNames
+=head2 $element->getAttributeNames()
 
-@attributes = $element->getAttributeNames( $ns );
-
-Returns a list of attribute names, used internaly.
+  Returns a list of attribute names, used internaly.
 
 =cut
 sub getAttributeNames
@@ -437,6 +417,11 @@ sub getAttributeNames
     return wantarray ? @names : \@names;
 }
 
+=head2 $element->getAttributeNamesNS( $namespace )
+
+  Returns a list of attribute names, used internaly.
+
+=cut
 sub getAttributeNamesNS
 {
 	my ($self, $ns) = @_;
@@ -458,17 +443,20 @@ sub getAttributeNamesNS
 	return @names;
 }
 
+=head2 $element->getAttributeNamespaces()
+
+  Returns a list of attribute names, used internaly.
+
+=cut
 sub getAttributeNamespaces
 {
 	my ($self) = @_;
 	return map { $_ ne '' ? $self->document->getNamespace($_) : '' } keys(%{$self->{'attributes'}});
 }
 
-=head2 hasAttribute
+=head2 $element->hasAttribute( $attributeName )
 
-$bool = $element->hasAttribute($attribute);
-
-Returns true ifthis element as this attribute.
+  Returns true if this element as this attribute.
 
 =cut
 sub hasAttribute
@@ -477,11 +465,9 @@ sub hasAttribute
 	return 1 if exists( $self->{'attributes'}->{''}->{$name} );
 }
 
-=head2 hasAttributeNS
+=head2 $element->hasAttributeNS( $namespace, $attributeName )
 
-$bool = $element->hasAttributeNS($ns, $attribute);
-
-Returns true if this attribute in this namespace is in this element.
+  Returns true if this attribute in this namespace is in this element.
 
 =cut
 sub hasAttributeNS
@@ -491,11 +477,9 @@ sub hasAttributeNS
     return 1 if exists( $self->{'attributes'}->{$prefix}->{$name} );
 }
 
-=head2 hasAttributes
+=head2 $element->hasAttributes()
 
-$bool = $element->hasAttributes();
-
-Return true is element has any attributes
+  Return true is element has any attributes
 
 =cut
 
@@ -505,11 +489,9 @@ sub hasAttributes
 	return 1 if $self->{'attributes'} and keys(%{ $self->{'attributes'} })
 }
 
-=head2 setAttribute
+=head2 $element->setAttribute( $attribute, $value )
 
-$element->setAttribute( 'attribute', 'value' );
-
-Set an attribute on this element, it will accept serialised strings or objects.
+  Set an attribute on this element, it will accept serialised strings or objects.
 
 =cut
 sub setAttribute
@@ -561,11 +543,9 @@ sub _get_attribute_object
 	return $result;
 }
 
-=head2 removeAttribute
+=head2 $element->removeAttribute( $name )
 
-$element->removeAttribute( $attribute );
-
-Remove a single attribute from this element.
+  Remove a single attribute from this element.
 
 =cut
 sub removeAttribute
@@ -577,6 +557,11 @@ sub removeAttribute
 	}
 }
 
+=head2 $element->removeAttributeNS( $namespace, $name )
+
+  Remove a single attribute from this element.
+
+=cut
 sub removeAttributeNS
 {
     my ($self, $ns, $name) = @_;
@@ -586,11 +571,9 @@ sub removeAttributeNS
     }
 }
 
-=head2 getAttributeNS
+=head2 $element->getAttributeNS( $namespace, $name )
 
-$namespace = $element->getAttributeNS( $attribute );
-
-Returns an attributes namespace in this element.
+  Returns an attributes namespace in this element.
 
 =cut
 sub getAttributeNS
@@ -606,11 +589,9 @@ sub getAttributeNS
 	}
 }
 
-=head2 setAttributeNS
+=head2 $element->setAttributeNS( $namespace, $name, $value )
 
-$element->setAttributeNS( $uri, $name, $value );
-
-Sets an attributes namespace in this element.
+  Sets an attributes namespace in this element.
 
 =cut
 sub setAttributeNS
@@ -626,12 +607,9 @@ sub setAttributeNS
 	}
 }
 
-=head2 cdata
+=head2 $element->cdata( $text )
 
-$string = $element->cdata;
-$element->cdata = $string; # overloaded to allow this
-
-Rerieve and set this elements cdata (non tag cdata form)
+  Rerieve and set this elements cdata (non tag cdata form)
 
 =cut
 sub cdata
@@ -647,11 +625,9 @@ sub cdata
 	return $self->{'cdata'};
 }
 
-=head2 hasCDATA
+=head2 $element->hasCDATA()
 
-$bool = $element->hasCDATA;
-
-Return true if this element has cdata.
+  Return true if this element has cdata.
 
 =cut
 sub hasCDATA ($) {
@@ -659,11 +635,9 @@ sub hasCDATA ($) {
 	return exists($self->{'cdata'});
 }
 
-=head2 document
+=head2 $element->document()
 
-$document = $element->document;
-
-Return this elements document, returns undef if no document available.
+  Return this elements document, returns undef if no document available.
 
 =cut
 sub document
@@ -678,11 +652,12 @@ sub document
 	}
 }
 
-=head2 insertBefore
+=head2 $element->insertBefore( $node, $childNode )
+=head2 $element->insertChildBefore( $node, $childNode )
+=head2 $element->insertNodeBefore( $node, $childNode )
+=head2 $element->insertElementBefore( $node, $childNode )
 
-$element->insertBefore($child, $refOtherChild);
-
-Inserts a new child element just before the referenced child.
+  Inserts a new element just before the referenced child.
 
 =cut
 sub insertBefore
@@ -697,9 +672,10 @@ sub insertBefore
 *insertNodeBefore=\&insertBefore;
 *insertElementBefore=\&insertBefore;
 
-=head2 insertAfter
-
-$element->insertAfter($child, $refOtherChild);
+=head2 $element->insertAfter( $node, $childNode )
+=head2 $element->insertChildAfter( $node, $childNode )
+=head2 $element->insertElementAfter( $node, $childNode )
+=head2 $element->insertNodeAfter( $node, $childNode )
 
 Inserts a new child element just after the referenced child.
 
@@ -716,11 +692,9 @@ sub insertAfter
 *insertNodeAfter=\&insertAfter;
 *insertElementAfter=\&insertAfter;
 
-=head2 insertSiblingAfter
+=head2 $element->insertSiblingAfter( $node )
 
-$element->insertSiblingAfter($child);
-
-Inserts the child just after the current element (effects parent).
+  Inserts the child just after the current element (effects parent).
 
 =cut
 sub insertSiblingAfter
@@ -730,11 +704,9 @@ sub insertSiblingAfter
 	return 0;
 }
 
-=head2 insertSiblingBefore
+=head2 $element->insertSiblingBefore( $node )
 
-$element->insertSiblingBefore($child);
-
-Inserts the child just before the current element (effects parent).
+  Inserts the child just before the current element (effects parent).
 
 =cut
 sub insertSiblingBefore
@@ -744,11 +716,9 @@ sub insertSiblingBefore
     return 0;
 } 
 
-=head2 replaceChild
+=head2 $element->replaceChild( $newChild, $oldChild )
 
-$oldChild = $element->replaceChild($newChild, $oldChild);
-
-Replace an old child with a new element, returns old element.
+  Replace an old child with a new element, returns old element.
 
 =cut
 sub replaceChild
@@ -765,11 +735,10 @@ sub replaceChild
 	return $oldChild;
 }
 
-=head2 replaceChild
+=head2 $element->replaceElement( $newElement )
+=head2 $element->replaceNode( $newElement )
 
-$element->replaceElement($newElement);
-
-Replace an old element with a new element in the parents context; element becomes orphaned.
+  Replace an old element with a new element in the parents context; element becomes orphaned.
 
 =cut
 sub replaceElement
@@ -779,11 +748,9 @@ sub replaceElement
 }
 *replaceNode=\&replaceElement;
 
-=head2 removeChild
+=head2 $element->removeChild( $child )
 
-$oldChild = $element->removeChild($oldChild);
-
-Remove a child from this element, returns the orphaned element.
+  Remove a child from this element, returns the orphaned element.
 
 =cut
 sub removeChild
@@ -794,11 +761,10 @@ sub removeChild
 	return $self->removeChildAtIndex($index);
 }
 
-=head2 removeElement
+=head2 $element->removeElement()
+=head2 $element->removeNode()
 
-$element->removeElement;
-
-Removes this element from it's parent; element becomes orphaned.
+  Removes this element from it's parent; element becomes orphaned.
 
 =cut
 sub removeElement
@@ -808,11 +774,11 @@ sub removeElement
 }
 *removeNode=\&removeElement;
 
-=head2 appendChild
+=head2 $element->appendChild( $node )
+=head2 $element->appendElement( $node )
+=head2 $element->appendNode( $node )
 
-$element->appendChild($newChild);
-
-Adds the new child to the end of this elements children list.
+  Adds the new child to the end of this elements children list.
 
 =cut
 sub appendChild
@@ -823,12 +789,11 @@ sub appendChild
 *appendElement=\&appendChild;
 *appendNode=\&appendChild;
 
-=head2 cloneNode
+=head2 $element->cloneNode( $deep )
+=head2 $element->cloneElement( $deep )
 
-$newNode = $element->cloneNode($deep);
-
-Clones the current element, deep allows all child elements to be cloned.
-The new element is an orphan with all the same id's and atributes as this element.
+  Clones the current element, deep allows all child elements to be cloned.
+  The new element is an orphan with all the same id's and atributes as this element.
 
 =cut
 sub cloneNode
@@ -851,11 +816,9 @@ sub cloneNode
 }
 *cloneElement=\&cloneNode;
 
-=head2 findChildIndex
+=head2 $element->findChildIndex( $child )
 
-$index = $element->findChildIndex($Child);
-
-Scans through children trying to find this child in the list.
+  Scans through children trying to find this child in the list.
 
 =cut
 sub findChildIndex
@@ -869,11 +832,9 @@ sub findChildIndex
 	return -1;
 }
 
-=head2 insertAtIndex
+=head2 $element->insertAtIndex( $node, $index )
 
-$element->insertAtIndex($newChild, $index);
-
-Adds the new child at the specified index to this element.
+  Adds the new child at the specified index to this element.
 
 =cut
 sub insertAtIndex
@@ -907,11 +868,9 @@ sub insertAtIndex
 	return 1;
 }
 
-=head2 removeAtIndex
+=head2 $element->removeChildAtIndex( $index )
 
-$element->removeAtIndex($index);
-
-Removed the child at index and returns the now orphaned element.
+  Removed the child at index and returns the now orphaned element.
 
 =cut
 sub removeChildAtIndex
@@ -928,7 +887,7 @@ sub removeChildAtIndex
 	return $oldChild;
 } 
 
-=head2 createChildElement
+=head2 $element->createChildElement
 
 Not DOM2, creates a child element, appending to current element.
 

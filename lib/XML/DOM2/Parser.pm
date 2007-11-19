@@ -19,6 +19,11 @@ use strict;
 use base qw(XML::SAX::Base);
 use Carp;
 
+=head2 $parser->new( %options )
+
+  Create a new parser object.
+
+=cut
 sub new
 {
 	my ($proto, %opts) = @_;
@@ -29,22 +34,37 @@ sub new
 	return bless \%opts, $proto;
 }
 
+=head2 $parser->document()
+
+  Return the document object
+
+=cut
 sub document
 {
 	my ($self) = @_;
 	return $self->{'document'};
 }
 
+=head2 $parser->start_document( $document )
+
+  Called at the start of a document.
+
+=cut
 sub start_document {
 	my ($self, $doc) = @_;
 	$self->{'inline'} = 0;
 }
 
+=head2 $parser->end_document()
+
+  Called at the end of a document.
+
+=cut
 sub end_document {
 	my ($self) = @_;
 }
 
-=head2 start_element
+=head2 $parser->start_element( $node )
 
   Start a new xml element
 
@@ -126,14 +146,13 @@ sub start_element
 
 }
 
-=head2 end_element
+=head2 $parser->end_element( $element )
 
   Ends an xml element
 
 =cut
 sub end_element
 {
-
 	my ($self, $element) = @_;
 	$self->text;
     # ELEMENT
@@ -144,7 +163,7 @@ sub end_element
 	$self->{'parent'} = pop @{$self->{'parents'}};
 }
 
-=head2 characters
+=head2 $parser->characters()
 
   Handle part of a cdata by concatination
 
@@ -159,7 +178,7 @@ sub characters
 	$self->{'text'} .= $text->{'Data'};
 }
 
-=head2 text
+=head2 $parser->text()
 
   Handle combined text strings as cdata
 
@@ -176,7 +195,7 @@ sub text
 	}
 }
 
-=head2 comment
+=head2 $parser->comment()
 
  WARNING: Comments are currently removed!
 
@@ -189,22 +208,41 @@ sub comment
 	# Data
 }
 
+=head2 $parser->start_cdata()
+
+  Never used by parser.
+
+=cut
 sub start_cdata
 {
 	warn "START CDATA\n";
 }
+
+=head2 $parser->end_cdata()
+
+  Never used by parser.
+
+=cut
 sub end_cdata
 {
 	warn "END CDATA\n";
 }
 
+=head2 $parser->processing_instruction()
+
+  Never used by parser.
+
+=cut
 sub processing_instruction
 {
 	warn "PI\n";
 }
 
-# We want to store the below details for the document creation
+=head2 $parser->doctype_decl( $dtd )
 
+  We want to store the below details for the document creation
+
+=cut
 sub doctype_decl
 {
 	my ($self, $dtd) = @_;
@@ -219,6 +257,11 @@ sub doctype_decl
 #	$self->{'dtd'} = $dtd;
 }
 
+=head2 $parser->xml_decl( $xml )
+
+  Decode the xml decleration information.
+
+=cut
 sub xml_decl
 {
 	my ($self, $xml) = @_;
@@ -232,4 +275,13 @@ sub xml_decl
 #	$self->{'xml'} = $xml;
 }
 
-return 1;
+=head1 COPYRIGHT
+
+Martin Owens, doctormo@cpan.org
+
+=head1 SEE ALSO
+
+L<XML::DOM2>,L<XML::SAX>
+
+=cut
+1;

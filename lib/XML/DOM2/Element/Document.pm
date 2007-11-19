@@ -1,12 +1,10 @@
 package XML::DOM2::Element::Document;
 
-=pod
-
 =head1 NAME
 
-XML::DOM2::Element::Document - DOM based document functions
+XML::DOM2::Element::Document
 
-=head1 SUMMARY
+=head1 DESCRIPTION
 
 Provides the document element objec with the required DOM
 interface for document wide element requests.
@@ -18,6 +16,11 @@ interface for document wide element requests.
 use base "XML::DOM2::Element";
 use Carp;
 
+=head2 $class->new( %arguments )
+
+  Create a new document object.
+
+=cut
 sub new
 {
 	my ($proto, %args) = @_;
@@ -26,6 +29,11 @@ sub new
 	return $doc;
 }
 
+=head2 $element->_attribute_handle( $name, %arguments )
+
+  Handle document attributes
+
+=cut
 sub _attribute_handle
 {
 	my ($self, $name, %opts) = @_;

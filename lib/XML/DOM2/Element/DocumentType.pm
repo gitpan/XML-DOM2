@@ -1,14 +1,15 @@
 package XML::DOM2::Element::DocumentType;
 
-=pod
+use strict;
+use warnings;
 
 =head1 NAME
 
-XML::DOM2::Element::DocumentType - XML DocumentType
+  XML::DOM2::Element::DocumentType - XML DocumentType
 
-=head1 SUMMARY
+=head1 DESCRIPTION
 
-Provides a DocumentType element for documents
+  Provides a DocumentType element for documents
 
 =head1 METHODS
 
@@ -109,7 +110,7 @@ sub systemId
 	return $self->{'systemId'};
 }
 
-=head internalSubset
+=head2 internalSubset
 
 The internal subset as a string.
 
@@ -121,6 +122,11 @@ sub internalSubset
 	die "Not implimented yet";
 }
 
+=head2 $documentType->dtd()
+
+  Returns the document type definition information.
+
+=cut
 sub dtd
 {
 	my ($self) = @_;

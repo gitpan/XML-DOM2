@@ -1,37 +1,34 @@
 package XML::DOM2::Element;
 
-=pod 
+use strict;
+use warnings;
 
 =head1 NAME
 
-XML::DOM2::Element - XML Element level control
+  XML::DOM2::Element - XML Element level control
 
 =head1 DISCRIPTION
 
-Element base class represents an element at the XML level.
-More specific element classes control the xml functionality
-which is abstracted from the xml.
+  Element base class represents an element at the XML level.
+  More specific element classes control the xml functionality which is abstracted from the xml.
 
-=head1 AUTHOR
-
-Martin Owens <doctormo@cpan.org> (Fork)
-Ronan Oger <ronan@roasp.com> 
-
-=head1 SEE ALSO
-
-perl(1),L<XML::DOM2>,L<XML::DOM2::Parser>
+=head1 METHODS
 
 =cut
 
 $VERSION = "1.00";
 
 use base "XML::DOM2::DOM::Element";
-use strict;
 use Carp;
 
 use XML::DOM2::Attribute;
 use XML::DOM2::Element::CDATA;
 
+=head2 $element->new( $name, %options )
+
+  Create a new element object.
+
+=cut
 sub new
 {
     my ($proto, $name, %opts) = @_;
@@ -43,12 +40,9 @@ sub new
     return $self;
 }
 
-=head2 xmlify
+=head2 $element->xmlify()
 
-Returns the element and all it's sub elements as a
-serialised xml string (serialisation)
-
-my $xml = $element->xmlify;
+  Returns the element and all it's sub elements as a serialised xml string (serialisation)
 
 =cut
 sub xmlify
@@ -84,13 +78,12 @@ sub xmlify
 	return $xml;
 }
 
-=head2 _element_handle
+=head2 $element->_element_handle()
 
 Inherited method, returns element which is the specific kind
 of child object required for this element.
 
 =cut
-
 sub _element_handle
 {
 	my ($self, $name, %opts) = @_;
@@ -103,7 +96,7 @@ sub _element_handle
 	}
 }
 
-=head2 _attribute_handle
+=head2 $element->_attribute_handle()
 
 Inherited method, returns attribute as new object or undef.
 
@@ -118,7 +111,7 @@ sub _attribute_handle
 	return XML::DOM2::Attribute->new( name => $name, owner => $self, %opts );
 }
 
-=head2 _has_attribute
+=head2 $element->_has_attribute()
 
 Inherited method, returns true if attribute has an object.
 
@@ -127,24 +120,24 @@ Used by XML::DOM2::DOM for auto attribute object handlers.
 =cut
 sub _has_attribute { 1 }
 
-=head2 _can_contain_elements
+=head2 $element->_can_contain_elements()
 
-Inherited method, returns true if the element can contain sub elements
+  Inherited method, returns true if the element can contain sub elements
 
 =cut
 sub _can_contain_elements { 1 }
 
 
-=head2 _can_contain_attributes
+=head2 $element->_can_contain_attributes()
 
-Inherited method, returns true if the element can have attributes.
+  Inherited method, returns true if the element can have attributes.
 
 =cut
 sub _can_contain_attributes { 1 }
 
-=head2 _serialise_open_tag
+=head2 $element->_serialise_open_tag()
 
-XML ELement serialisation, Open Tag.
+  XML ELement serialisation, Open Tag.
 
 =cut
 sub _serialise_open_tag
@@ -155,9 +148,9 @@ sub _serialise_open_tag
 	return "<$name$at>";
 }
 
-=head2 _serialise_tag
+=head2 $element->_serialise_tag()
 
-XML ELement serialisation, Self contained tag.
+  XML ELement serialisation, Self contained tag.
 
 =cut
 sub _serialise_tag
@@ -168,9 +161,9 @@ sub _serialise_tag
 	return "<$name$at \/>";
 }
 
-=head2 _serialise_close_tag
+=head2 $element->_serialise_close_tag()
 
-XML ELement serialisation, Close Tag.
+  XML ELement serialisation, Close Tag.
 
 =cut
 sub _serialise_close_tag
@@ -180,9 +173,9 @@ sub _serialise_close_tag
 	return "</$name>";
 }
 
-=head2 _serialise_attributes
+=head2 $element->_serialise_attributes()
 
-XML ELement serialisation, Attributes.
+  XML ELement serialisation, Attributes.
 
 =cut
 sub _serialise_attributes
@@ -191,6 +184,11 @@ sub _serialise_attributes
     return $self->getAttributes(3);
 }
 
+=head2 $element->error( $command, $error )
+
+  Raise an error.
+
+=cut
 sub error ($$$) {
     my ($self,$command,$error)=@_;
 	confess "Error requires both command and error" if not $command or not $error;
@@ -205,4 +203,18 @@ sub error ($$$) {
     $self->{errors}{$command}=$error;
 }
 
+=head2 BEGIN()
+
+  POD Catch, imagened method.
+
+=head1 AUTHOR
+
+  Martin Owens <doctormo@cpan.org> (Fork)
+  Ronan Oger <ronan@roasp.com>
+
+=head1 SEE ALSO
+
+  perl(1),L<XML::DOM2>,L<XML::DOM2::Parser>
+
+=cut
 1;

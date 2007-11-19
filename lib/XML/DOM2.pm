@@ -1,39 +1,46 @@
 package XML::DOM2;
 
-=pod 
+use strict;
+use warnings;
 
 =head1 NAME
 
-XML::DOM2 - DOM controlled, strict XML module for extentable xml objects.
+  XML::DOM2 - DOM controlled, strict XML module for extentable xml objects.
 
-=head2 VERSION
+=head1 VERSION
 
-Version 0.03, 12 July, 2006
+Version 0.04 - 2007-11-19
+
+=head1 SYNOPSIS
+
+  my $xml = XML::DOM2->new( file => 'filename.xml' );
+  my $xml = XML::DOM2->new( data => '<xml>data</xml>' );
+  my $xml = XML::DOM2->new( fh   => $file_handle );
+
+  $xml->getChildren();
 
 =head1 DESCRIPTION
 
-XML::DOM2 is yet _another_ perl XML module.
+  XML::DOM2 is yet _another_ perl XML module.
 
-Features:
+  Features:
 
- * DOM Level2 Compilence in both document, elements and attributes
- * NameSpace control for elements and attributes
- * XPath (it's just one small method once you have a good DOM)
- * Extendability:
-  * Document, Element or Attribute classes can be used as base class for other
-    kinds of document, element or attribute.
-  * Element and Attribute Handler allows element specific child elements and attribute objects.
-  * Element and Attribute serialisation overiding.
- * Parsing with SAX (use XML::SAX::PurePerl for low dependancy installs)
- * Internal serialisation
+  * DOM Level2 Compilence in both document, elements and attributes
+  * NameSpace control for elements and attributes
+  * XPath (it's just one small method once you have a good DOM)
+  * Extendability:
+   * Document, Element or Attribute classes can be used as base class for other
+     kinds of document, element or attribute.
+   * Element and Attribute Handler allows element specific child elements and attribute objects.
+   * Element and Attribute serialisation overiding.
+  * Parsing with SAX (use XML::SAX::PurePerl for low dependancy installs)
+  * Internal serialisation
 
 =head1 METHODS
 
 =cut
 
-use strict;
 use vars qw($VERSION);
-
 use base "XML::DOM2::DOM::Document";
 use Carp;
 
@@ -48,7 +55,7 @@ use XML::DOM2::Element::CDATA;
 use XML::DOM2::Parser;
 use XML::SAX::ParserFactory;
 
-$VERSION = "0.03";
+$VERSION = "0.04";
 
 my %default_options = (
     # processing options
@@ -60,15 +67,9 @@ my %default_options = (
     nocredits  => 0,       # enable/disable credit note comment
 );
 
-=head2 new
+=head2 $class->new( file|data|fh )
 
-$xml = XML::DOM2->new(
-	-file = [xmlfilename],
-	-data = [xmldata],
-	%options
-);
-
-Create a new xml object, it will parse a file or data if required or will await creation of nodes.
+  Create a new xml object, it will parse a file, data or a file handle if required or will await creation of nodes.
 
 =cut
 sub new
@@ -84,9 +85,9 @@ sub new
     return $self;
 }
 
-=head2 parseDocument
+=head2 $object->parseDocument( %p )
 
-Parse existing xml data into a document.
+  Parse existing xml data into a document, inputs taken from ->new;
 
 =cut
 sub parseDocument
@@ -105,14 +106,13 @@ sub parseDocument
 	return $xml;
 } 
 
-=head2 xmlify (alias: to_xml render, serialize, serialise)
+=head2 $object->xmlify( %options )
 
-$string = $xml->xmlify(%attributes);
+  $string = $xml->xmlify( %options );
 
-Returns xml representation of xml document.
+  Returns xml representation of xml document.
 
 =cut
-
 sub xmlify
 {
     my ($self,%attrs) = @_;
@@ -150,11 +150,12 @@ sub xmlify
 *serialise=\&xmlify;
 *serialize=\&xmlify;
 
-=head2 extention
-	
-$extention = $xml->extention;
 
-Does not work, legacy option maybe enabled in later versions.
+=head2 $object->extention()
+	
+  $extention = $xml->extention();
+
+  Does not work, legacy option maybe enabled in later versions.
 
 =cut
 sub extension
@@ -163,21 +164,49 @@ sub extension
     return $self->{'-extension'};
 }
 
-=head2 options
 
-  namespace  - Default document name space
-  name       - Document localName
-  doctype    - Document Type object
-  version    - XML Version
-  encoding   - XML Encoding
-  standalone - XML Standalone
+=head1 OPTIONS
+
+=head2 $object->namespace( $set )
+
+  Default document name space
 
 =cut
 sub namespace  { shift->_option('namespace',  @_); }
+
+=head2 $object->name( $set )
+
+  Document localName
+
+=cut
 sub name       { shift->_option('name',       @_); }
+
+=head2 $object->doctype()
+
+  Document Type object
+
+=cut
 sub doctype    { shift->_option('doctype',    @_); }
+
+=head2 $object->version()
+
+  XML Version
+
+=cut
 sub version    { shift->_option('version',    @_); }
+
+=head2 $object->encoding()
+
+  XML Encoding
+
+=cut
 sub encoding   { shift->_option('encoding',   @_); }
+
+=head2 $object->standalone()
+
+ XML Standalone
+
+=cut
 sub standalone { shift->_option('standalone', @_); }
 
 =head1 INTERNAL METHODS
@@ -274,6 +303,11 @@ sub _element_handle
 	return XML::DOM2::Element->new( $type, %opts );
 }
 
+=head2 $object->_option( $name[, $data] )
+
+  Set or get the required option.
+
+=cut
 sub _option
 {
 	my ($self, $option, $set) = @_;
@@ -283,27 +317,30 @@ sub _option
 	return $self->{$option};
 }
 
+=head2 $object->_can_contain_element()
+
+  Does this node support element children.
+
+=cut
 sub _can_contain_element { 1 }
 
-=head2 _document_name
 
-$xml->_document_name;
+=head2 $object->_document_name()
 
-Returns the doctype name or 'xml' as default, can be extended.
+  Returns the doctype name or 'xml' as default, can be extended.
 
 =cut
 sub _document_name { return shift->doctype->name || 'xml'; }
 
-=head2 _credit_comment
+=head2 $object->_credit_comment()
 
-$xml->_credit_comment;
-
-Returns the comment credit used in the output
+  Returns the comment credit used in the output
 
 =cut
 sub _credit_comment { "\nGenerated using the Perl XML::DOM2 Module V$VERSION\nWritten by Martin Owens\n" }
 
-=head1 AUTHOR
+
+=head1 COPYRIGHT
 
 Martin Owens, doctormo@cpan.org
 
@@ -314,8 +351,6 @@ Based on SVG.pm by Ronan Oger, ronan@roasp.com
 =head1 SEE ALSO
 
 perl(1),L<XML::DOM2>,L<XML::DOM2::Parser>
-L<http://www.w3c.org/Graphics/SVG/> SVG at the W3C
 
 =cut 
-
-return 1;
+1;
