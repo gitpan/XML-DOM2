@@ -18,6 +18,11 @@ use strict;
 use warnings;
 use Carp;
 
+use overload
+	'""' => sub { shift->auto_string( @_ ) },
+	'eq' => sub { shift->auto_eq( @_ ) },
+	'ne' => sub { not shift->auto_eq( @_ ) };
+
 =head2 $class->new( %options )
 
   Create a new Attribute object.
@@ -99,6 +104,18 @@ sub document
 
 =cut
 sub delete {}
+
+=head1 OVERLOADED
+
+=head2 $object->auto_string()
+
+=cut
+sub auto_string { return shift->value() }
+
+=head2 $object->auto_eq( $string )
+
+=cut
+sub auto_eq { return shift->value() eq shift }
 
 =head1 COPYRIGHT
 

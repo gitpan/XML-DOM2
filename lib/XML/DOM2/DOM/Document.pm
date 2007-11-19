@@ -58,7 +58,7 @@ sub createDocument
 
 =head2 $document->documentElement()
 
-  Returns the main document element.
+  Returns the main document as an element! it's no longer a document object.
 
 =cut
 sub documentElement
@@ -96,12 +96,12 @@ sub documentType
 	return $self->{'doctype'};
 }
 
-=head2 $document->addID( $id, $element )
+=head2 $document->addId( $id, $element )
 
   Adds an id of an element, used internaly.
 
 =cut
-sub addID
+sub addId
 {
 	my ($self, $id, $tag) = @_;
 	if(not defined($self->{'idlist'})) {
@@ -114,23 +114,23 @@ sub addID
 	return undef;
 }
 
-=head2 $document->removeID( $id )
+=head2 $document->removeId( $id )
 
   Removes an id of an element, used internaly.
 
 =cut
-sub removeID
+sub removeId
 {
 	my ($self, $id) = @_;
 	return delete($self->{'idlist'}->{$id});
 }
 
-=head2 $document->getElementByID( $id )
+=head2 $document->getElementById( $id )
 
   Returns the element with that id in this document.
 
 =cut
-sub getElementByID
+sub getElementById
 {
 	my ($self, $id)=@_;
 	return undef unless defined($id);

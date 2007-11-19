@@ -9,7 +9,7 @@ use warnings;
 
 =head1 VERSION
 
-Version 0.04 - 2007-11-19
+Version 0.05 - 2007-11-19
 
 =head1 SYNOPSIS
 
@@ -40,6 +40,8 @@ Version 0.04 - 2007-11-19
 
 =cut
 
+our $VERSION = '0.05';
+
 use vars qw($VERSION);
 use base "XML::DOM2::DOM::Document";
 use Carp;
@@ -54,8 +56,6 @@ use XML::DOM2::Element::CDATA;
 # XML Parsing
 use XML::DOM2::Parser;
 use XML::SAX::ParserFactory;
-
-$VERSION = "0.04";
 
 my %default_options = (
     # processing options
@@ -107,10 +107,15 @@ sub parseDocument
 } 
 
 =head2 $object->xmlify( %options )
-
-  $string = $xml->xmlify( %options );
+=head2 $object->render( %options )
+=head2 $object->to_xml( %options )
+=head2 $object->serialise( %options )
+=head2 $object->serialize( %options )
 
   Returns xml representation of xml document.
+
+  Options:
+    seperator - default is carage return
 
 =cut
 sub xmlify
@@ -151,7 +156,7 @@ sub xmlify
 *serialize=\&xmlify;
 
 
-=head2 $object->extention()
+=head2 $object->extension()
 	
   $extention = $xml->extention();
 

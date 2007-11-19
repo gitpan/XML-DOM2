@@ -5,7 +5,12 @@ Revision history for XML-DOM2
 0.02    2006-05-02
         Changed DOM to include attribute name spaces
 0.03    2006-07-13
-		Added Element hander functionality
-		Updated Parser to include parent creation of elements
-		Moved XPath method to it's own module
-
+	Added Element hander functionality
+	Updated Parser to include parent creation of elements
+	Moved XPath method to it's own module
+0.04    2007-11-19
+	Cleaned up many pod problems
+0.05    2007-11-19
+	Fixed errors caused by 0.04
+	Added overload to attributes
+	Added simple xml loading test

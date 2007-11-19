@@ -65,7 +65,7 @@ sub getChildIndex ($;@) {
     }
 
     for my $index (0..$#children) {
-        return $index if $children[$index]==$self;
+        return $index if $children[$index] == $self;
     }
 
     return undef;
@@ -317,7 +317,7 @@ sub hasSiblings ($) {
 =head2 $element->getNodeName()
 =head2 $element->getNodeType()
 
-  Return a string containing the name (i.e. the type, not the ID) of an element.
+  Return a string containing the name (i.e. the type, not the Id) of an element.
 
 =cut
 sub getElementName ($) {
@@ -332,12 +332,12 @@ sub getElementName ($) {
 *getNodeName=\&getElementName;
 *getNodeType=\&getElementName;
 
-=head2 $element->getElementID()
+=head2 $element->getElementId()
 
-  Return a string containing the elements ID (unique identifier string).
+  Return a string containing the elements Id (unique identifier string).
 
 =cut
-sub getElementID ($) {
+sub getElementId ($) {
     my $self=shift;
 
     if (exists $self->{id}) {
@@ -502,14 +502,14 @@ sub setAttribute
 	# This ensures that ids are updated in a sane way.
 	if ($name eq "id" and $self->document and defined($value)) {
 		# Set the new id
-		if($self->document->addID($value, $self)) {
+		if($self->document->addId($value, $self)) {
 			if($existing) {
 				# Remove the old id
 				my $oldvalue = $existing->serialise;
-				$self->document->removeID($oldvalue);
+				$self->document->removeId($oldvalue);
 			}
 		} else {
-			$self->error('setAttribute', "ID '$value' already exists in document, unable to modify attribute");
+			$self->error('setAttribute', "Id '$value' already exists in document, unable to modify attribute");
 			return undef;
 		}
 	}
@@ -615,7 +615,7 @@ sub setAttributeNS
 sub cdata
 {
 	my ($self, $text) = @_;
-	if($self->hasChildren) {
+	if($self->hasChildren()) {
 		$self->error(value => "Unable to get cdata for element with children, xml error!");
 		return;
 	}
@@ -841,10 +841,10 @@ sub insertAtIndex
 {
 	my ($self, $newChild, $index) = @_;
 	confess "Unable to insertAtIndex no index defined" if not defined($index);
-	my $id = $newChild->getElementID;
+	my $id = $newChild->getElementId();
 	if($self->document) {
-		if($id && not $self->document->addID($id, $newChild)) {
-			$self->error($id => "ID already exists in document");
+		if($id && not $self->document->addId($id, $newChild)) {
+			$self->error($id => "Id already exists in document");
 	        return undef;
 		}
 		$self->document->addElement($newChild);
@@ -877,8 +877,8 @@ sub removeChildAtIndex
 {
 	my ($self, $index) = @_;
 	my $oldChild = splice @{$self->{'children'}}, $index, 1;
-	my $id = $oldChild->getElementID();
-	$self->document->removeID($id) if($id);
+	my $id = $oldChild->getElementId();
+	$self->document->removeId($id) if($id);
 	$self->document->removeElement($oldChild);
 	$oldChild->setParent(undef);
 	if(not $self->hasChildren) {

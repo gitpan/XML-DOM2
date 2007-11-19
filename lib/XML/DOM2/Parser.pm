@@ -215,7 +215,7 @@ sub comment
 =cut
 sub start_cdata
 {
-	warn "START CDATA\n";
+	print STDERR "START CDATA\n";
 }
 
 =head2 $parser->end_cdata()
@@ -225,7 +225,7 @@ sub start_cdata
 =cut
 sub end_cdata
 {
-	warn "END CDATA\n";
+	print STDERR "END CDATA\n";
 }
 
 =head2 $parser->processing_instruction()
@@ -235,7 +235,7 @@ sub end_cdata
 =cut
 sub processing_instruction
 {
-	warn "PI\n";
+	print STDERR "PI\n";
 }
 
 =head2 $parser->doctype_decl( $dtd )

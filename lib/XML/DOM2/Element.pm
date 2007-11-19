@@ -16,8 +16,6 @@ use warnings;
 
 =cut
 
-$VERSION = "1.00";
-
 use base "XML::DOM2::DOM::Element";
 use Carp;
 
@@ -202,6 +200,18 @@ sub error ($$$) {
 
     $self->{errors}{$command}=$error;
 }
+
+=head1 OVERLOADED
+
+=head2 $object->auto_string()
+
+=cut
+sub auto_string { return $_[0]->hasCDATA() ? $_[0]->cdata() : '' }
+
+=head2 $object->auto_eq( $string )
+
+=cut
+sub auto_eq { return shift->auto_string() eq shift }
 
 =head2 BEGIN()
 
