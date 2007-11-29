@@ -87,38 +87,38 @@ sub start_element
 		$self->document->doctype->name($node->{'LocalName'});
 	}
 
-	my $element;
-	if($parent) {
-		# Name spaces
-		my $ns = $self->document->getNamespace( $node->{'Prefix'} ) if $node->{'Prefix'};
-		warn "Could not get namespace for node: ".$node->{'Prefix'}."\n" if $node->{'Prefix'} && not defined($ns);
-		$element = $parent->createChildElement($node->{'LocalName'},
-			document  => $self->document,
-			namespace => $ns,
-		);
-	} else {
-		# This would be a root element (document)
-		$self->{'parents'} = [];
-		$element = $self->document->createElement( $node->{'LocalName'}, document => $self->document );
-		$self->document->documentElement($element);
-		# Name spaces, we do this first so later on we don't try adding attributes
-		# into the document element that have namespaces yet to be added in the hash
-		# order (perl!)
-		my $ns = $self->document->getNamespace( 'xmlns' );
-		foreach my $a (keys(%{$node->{'Attributes'}})) {
-			my $attribute = $node->{'Attributes'}->{$a};
-			if($attribute->{'Name'} eq 'xmlns') {
-#				warn "Namespace ".$attribute->{'Prefix'}.':'.$attribute->{'Name'}.'='.$attribute->{'Value'}." to ".$node->{'Name'}."\n";
-				$element->setAttribute( $attribute->{'LocalName'}, $attribute->{'Value'} );
-			} elsif($attribute->{'Prefix'} eq 'xmlns') {
-#				warn "NSW ".$attribute->{'Prefix'}.':'.$attribute->{'Name'}.'='.$attribute->{'Value'}." to ".$node->{'Name'}."\n";
-				$self->document->createNamespace($attribute->{'LocalName'}, $attribute->{'Value'});
-			} else {
-				next;
+	if( $node->{'LocalName'} ) {
+		if($parent) {
+			# Name spaces
+			my $ns = $self->document->getNamespace( $node->{'Prefix'} ) if $node->{'Prefix'};
+			warn "Could not get namespace for node: ".$node->{'Prefix'}."\n" if $node->{'Prefix'} && not defined($ns);
+			$element = $parent->createChildElement($node->{'LocalName'},
+				document  => $self->document,
+				namespace => $ns,
+			);
+		} else {
+			# This would be a root element (document)
+			$self->{'parents'} = [];
+			$element = $self->document->createElement( $node->{'LocalName'}, document => $self->document );
+			$self->document->documentElement($element);
+			# Name spaces, we do this first so later on we don't try adding attributes
+			# into the document element that have namespaces yet to be added in the hash
+			# order (perl!)
+			my $ns = $self->document->getNamespace( 'xmlns' );
+			foreach my $a (keys(%{$node->{'Attributes'}})) {
+				my $attribute = $node->{'Attributes'}->{$a};
+				if($attribute->{'Name'} eq 'xmlns') {
+#					warn "Namespace ".$attribute->{'Prefix'}.':'.$attribute->{'Name'}.'='.$attribute->{'Value'}." to ".$node->{'Name'}."\n";
+					$element->setAttribute( $attribute->{'LocalName'}, $attribute->{'Value'} );
+				} elsif($attribute->{'Prefix'} eq 'xmlns') {
+#					warn "NSW ".$attribute->{'Prefix'}.':'.$attribute->{'Name'}.'='.$attribute->{'Value'}." to ".$node->{'Name'}."\n";
+					$self->document->createNamespace($attribute->{'LocalName'}, $attribute->{'Value'});
+				} else {
+					next;
+				}
+				delete($node->{'Attributes'}->{$a});
 			}
-			delete($node->{'Attributes'}->{$a});
 		}
-
 	}
 
 	# ATTRIBUTES {}
@@ -172,6 +172,7 @@ sub characters
 {
 	my ($self, $text) = @_;
 
+	$text = $text->() if ref($text) eq 'CODE';
 	# We wish to keep track of text characters, and
 	# and deal with text once other elements are found
 	$self->{'text'} = '' if not defined($self->{'-text'});

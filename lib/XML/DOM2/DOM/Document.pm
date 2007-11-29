@@ -93,6 +93,9 @@ sub documentElement
 sub documentType
 {
 	my ($self) = @_;
+#	if(not $self->{'doctype'}) {
+#		$self->{'doctype'} = $self->createDocumentType();
+#	}
 	return $self->{'doctype'};
 }
 
@@ -177,7 +180,9 @@ sub removeElement
 }
 
 =head2 $document->getElements( $type )
+
 =head2 $document->getElementsByType( $type )
+
 =head2 $document->getElementsByName( $type )
 
   Get all elements of the specified type/tagName; if none is specified, get all elements in document.
@@ -208,6 +213,7 @@ sub getElements
 *getElementsByName=\&getElements;
 
 =head2 $document->getElementNames()
+
 =head2 $document->getElementTypes()
 
   Get all the element types in use in the document.

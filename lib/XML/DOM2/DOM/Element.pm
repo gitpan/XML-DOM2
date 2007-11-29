@@ -18,6 +18,7 @@ use strict;
 use Carp;
 
 =head2 $element->getFirstChild()
+
 =head2 $element->firstChild()
 
   Returns the elements first child in it's children list
@@ -34,6 +35,7 @@ sub getFirstChild ($) {
 *firstChild=\&getFirstChild;
 
 =head2 $element->getLastChild()
+
 =head2 $element->lastChild()
 
   Returns the elements last child in it's children list
@@ -89,6 +91,7 @@ sub getChildAtIndex ($$;@) {
 }
 
 =head2 $element->getNextSibling()
+
 =head2 $element->nextSibling()
 
   Return the next element to this element in the parents child list.
@@ -109,6 +112,7 @@ sub getNextSibling ($) {
 *nextSibling=\&getNextSibling;
 
 =head2 $element->getPreviousSibling()
+
 =head2 $element->previousSibling()
 
   Return the previous element to this element in the parents child list.
@@ -130,7 +134,9 @@ sub getPreviousSibling ($) {
 *previousSibling=\&getPreviousSibling;
 
 =head2 $element->getChildren()
+
 =head2 $element->getChildElements()
+
 =head2 $element->getChildNodes()
 
   Returns all the elements children.
@@ -155,12 +161,18 @@ sub getChildrenByName
 {
 	my ($self, $name) = @_;
 	if(defined($self->{'child'}->{$name})) {
-		return @{$self->{'child'}->{$name}};
+		if(wantarray) {
+			return @{$self->{'child'}->{$name}};
+		} else {
+			return $self->{'child'}->{$name}->[0];
+		}
 	}
 }
 
 =head2 $element->hasChildren()
+
 =head2 $element->hasChildElements()
+
 =head2 $element->hasChildNodes()
 
   Returns 1 if this element has children.
@@ -181,7 +193,9 @@ sub hasChildren ($) {
 *hasChildNodes=\&hasChildren;
 
 =head2 $element->getParent()
+
 =head2 $element->getParentElement()
+
 =head2 $element->getParentNode()
 
   Returns the object of the parent element.
@@ -200,6 +214,7 @@ sub getParent ($) {
 *getParentNode=\&getParent;
 
 =head2 $element->setParent( $element )
+
 =head2 $element->setParentElement( $element )
 
 $element->setParent($parent);
@@ -220,8 +235,11 @@ sub setParent ($$) {
 *setParentElement=\&setParent;
 
 =head2 $element->getParents()
+
 =head2 $element->getParentElements()
+
 =head2 $element->getParentNodes()
+
 =head2 $element->getAncestors()
 
   Return a list of the parents of the current element, starting from the immediate parent. The
@@ -310,11 +328,17 @@ sub hasSiblings ($) {
 }
 
 =head2 $element->getElementName()
+
 =head2 $element->getElementType()
+
 =head2 $element->getType()
+
 =head2 $element->getTagName()
+
 =head2 $element->getTagType()
+
 =head2 $element->getNodeName()
+
 =head2 $element->getNodeType()
 
   Return a string containing the name (i.e. the type, not the Id) of an element.
@@ -620,7 +644,11 @@ sub cdata
 		return;
 	}
 	if(defined($text)) {
-		$self->{'cdata'} = XML::DOM2::Element::CDATA->new($text, notag => 1);
+		if(ref($text) =~ /CDATA/) {
+			$self->{'cdata'} = $text;
+		} else {
+			$self->{'cdata'} = XML::DOM2::Element::CDATA->new($text, notag => 1);
+		}
 	}
 	return $self->{'cdata'};
 }
@@ -653,8 +681,11 @@ sub document
 }
 
 =head2 $element->insertBefore( $node, $childNode )
+
 =head2 $element->insertChildBefore( $node, $childNode )
+
 =head2 $element->insertNodeBefore( $node, $childNode )
+
 =head2 $element->insertElementBefore( $node, $childNode )
 
   Inserts a new element just before the referenced child.
@@ -673,8 +704,11 @@ sub insertBefore
 *insertElementBefore=\&insertBefore;
 
 =head2 $element->insertAfter( $node, $childNode )
+
 =head2 $element->insertChildAfter( $node, $childNode )
+
 =head2 $element->insertElementAfter( $node, $childNode )
+
 =head2 $element->insertNodeAfter( $node, $childNode )
 
 Inserts a new child element just after the referenced child.
@@ -736,6 +770,7 @@ sub replaceChild
 }
 
 =head2 $element->replaceElement( $newElement )
+
 =head2 $element->replaceNode( $newElement )
 
   Replace an old element with a new element in the parents context; element becomes orphaned.
@@ -757,11 +792,12 @@ sub removeChild
 {
 	my ($self, $oldChild) = @_;
 	my $index = $self->findChildIndex($oldChild);
-	return 0 if($index < 0); # NOT_FOUND_ERR
+	return 0 if(not defined $index or $index < 0); # NOT_FOUND_ERR
 	return $self->removeChildAtIndex($index);
 }
 
 =head2 $element->removeElement()
+
 =head2 $element->removeNode()
 
   Removes this element from it's parent; element becomes orphaned.
@@ -775,7 +811,9 @@ sub removeElement
 *removeNode=\&removeElement;
 
 =head2 $element->appendChild( $node )
+
 =head2 $element->appendElement( $node )
+
 =head2 $element->appendNode( $node )
 
   Adds the new child to the end of this elements children list.
@@ -790,6 +828,7 @@ sub appendChild
 *appendNode=\&appendChild;
 
 =head2 $element->cloneNode( $deep )
+
 =head2 $element->cloneElement( $deep )
 
   Clones the current element, deep allows all child elements to be cloned.
@@ -887,7 +926,9 @@ sub removeChildAtIndex
 	return $oldChild;
 } 
 
-=head2 $element->createChildElement
+=head2 $element->createChildElement( $name, %options )
+
+=head2 $element->createElement( $name, %options )
 
 Not DOM2, creates a child element, appending to current element.
 
@@ -900,7 +941,7 @@ Example: an SVG Gradiant will have stop elements under it, creating
 stop elements with $document->createElement will return an XML::DOM2::Element
 create a stop element with $element->createChildElement and it will
 return an SVG2::Element::Gradiant::Stop object (although both would
-output the same xml) and t would also prevent you from creating invalid
+output the same xml) and it would also prevent you from creating invalid
 child elements such as a group within a text element.
 
 $element->createChildElement($name, %opts);
@@ -910,10 +951,15 @@ $element->createChildElement($name, %opts);
 sub createChildElement
 {
 	my ($self, $name, %opts) = @_;
-	my $element = $self->_element_handle($name, %opts);
-	$self->appendChild($element);
+	my $element = $self->_element_handle($name, %opts, document => $self->document() );
+	if(ref($element) =~ /CDATA/) {
+		$self->cdata( $element );
+	} else {
+		$self->appendChild($element);
+	}
 	return $element;
 }
+*createElement=\&createChildElement;
 
 =head1 AUTHOR
 

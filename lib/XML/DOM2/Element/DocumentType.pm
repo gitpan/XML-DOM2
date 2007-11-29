@@ -93,7 +93,6 @@ Returns the public identifier of the external subset.
 sub publicId
 {
 	my ($self, $set) = @_;
-	warn "Trying to get/set public if $set\n";
 	$self->{'publicId'} = $set if defined($set);
 	return $self->{'publicId'};
 }

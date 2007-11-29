@@ -9,7 +9,7 @@ use warnings;
 
 =head1 VERSION
 
-Version 0.05 - 2007-11-19
+Version 0.06 - 2007-11-28
 
 =head1 SYNOPSIS
 
@@ -30,7 +30,7 @@ Version 0.05 - 2007-11-19
   * XPath (it's just one small method once you have a good DOM)
   * Extendability:
    * Document, Element or Attribute classes can be used as base class for other
-     kinds of document, element or attribute.
+	 kinds of document, element or attribute.
    * Element and Attribute Handler allows element specific child elements and attribute objects.
    * Element and Attribute serialisation overiding.
   * Parsing with SAX (use XML::SAX::PurePerl for low dependancy installs)
@@ -40,7 +40,7 @@ Version 0.05 - 2007-11-19
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use vars qw($VERSION);
 use base "XML::DOM2::DOM::Document";
@@ -58,13 +58,13 @@ use XML::DOM2::Parser;
 use XML::SAX::ParserFactory;
 
 my %default_options = (
-    # processing options
-    printerror => 1,       # print error messages to STDERR
-    raiseerror => 1,       # die on errors (implies -printerror)
-    # rendering options
-    indent     => "\t",    # what to indent with
-    seperator  => "\n",    # element line (vertical) separator
-    nocredits  => 0,       # enable/disable credit note comment
+	# processing options
+	printerror => 1,	   # print error messages to STDERR
+	raiseerror => 1,	   # die on errors (implies -printerror)
+	# rendering options
+	indent	 => "\t",	# what to indent with
+	seperator  => "\n",	# element line (vertical) separator
+	nocredits  => 0,	   # enable/disable credit note comment
 );
 
 =head2 $class->new( file|data|fh )
@@ -74,15 +74,15 @@ my %default_options = (
 =cut
 sub new
 {
-    my ($proto, %o) = @_;
-    my $class = ref $proto || $proto;
+	my ($proto, %o) = @_;
+	my $class = ref $proto || $proto;
 
 	if($o{'file'} or $o{'fh'} or $o{'data'}) {
 		return $class->parseDocument(%o);
 	}
 
 	my $self = bless \%o, $class;
-    return $self;
+	return $self;
 }
 
 =head2 $object->parseDocument( %p )
@@ -115,20 +115,20 @@ sub parseDocument
   Returns xml representation of xml document.
 
   Options:
-    seperator - default is carage return
+	seperator - default is carage return
 
 =cut
 sub xmlify
 {
-    my ($self,%attrs) = @_;
-    my ($decl,$ns);
-
+	my ($self,%attrs) = @_;
+	my ($decl,$ns);
+	
 	my $sep = $attrs{'seperator'} || $self->{'seperator'} || "\n";
-    unless ($self->{-nocredits}) {
-        $self->documentElement->appendChild(
-			$self->createComment( $self->_credit_comment ),
-		);
-    }
+	unless ($self->{'nocredits'}) {
+		#$self->documentElement->appendChild(
+		#	$self->createComment( $self->_credit_comment ),
+		#);
+	}
 
 	my $xml = '';
 	#write the xml header
@@ -145,7 +145,7 @@ sub xmlify
 	$xml .= $self->documentElement->xmlify(
 		namespace => $self->{'-namespace'},
 		seperator => $sep,
-		indent    => $self->{'-indent'},
+		indent	=> $self->{'-indent'},
 	);
 	# Return xml string
 	return $xml;
@@ -155,6 +155,88 @@ sub xmlify
 *serialise=\&xmlify;
 *serialize=\&xmlify;
 
+=head2 I<$class>->adaptation( $name, $structure )
+
+  Convert a perl structure and create a new xml document of it:
+
+	$class->adaptation('xml', { foo => [ 'A', 'B', 'C' ], bar => 'D', kou => { 'A' => 1, 'B' => 2 } });
+
+  Will convert to:
+
+	"<xml><foo>A</foo><foo>B</foo><foo>C</foo><bar>D</bar><kou><A>1</A><B>2</B></xml>"
+
+	$class->adaptation('xml', { 'foo' => [ { '+' => 'A', '_Letter' => '1' }, { '+' => 'B', '_Letter' => 2 } ] });
+
+	Will convert to:
+
+	"<xml><foo Letter="1">A</foo><foo Letter="2">B</foo></xml>"
+
+=cut
+sub adaptation
+{
+	my ($class, $baseTag, $structure) = @_;
+	my $self = $class->new( baseTag => $baseTag );
+	my $root = $self->documentElement();
+	$class->_adapt_hash( $root, $structure );
+	return $self;
+}
+
+# Adapt any kind of child object / data type
+sub _adapt_child
+{
+	my ($class, $element, $data, $parent) = @_;
+	if(UNIVERSAL::isa($data, 'HASH')) {
+		return $class->_adapt_hash( $element, $data, $parent );
+	} elsif(UNIVERSAL::isa($data, 'ARRAY')) {
+		return $class->_adapt_array( $element, $data, $parent );
+	} else {
+		return $class->_adapt_scalar( $element, scalar($data) );
+	}
+}
+
+# Adapt a HASH ref into XML
+sub _adapt_hash
+{
+	my ($class, $element, $hash) = @_;
+
+	foreach my $name (keys(%{$hash})) {
+		my $data  = $hash->{$name};
+
+		if($name eq '+') {
+			$element->cdata($data)
+		} elsif($name =~ /^_(.+)$/) {
+			$element->setAttribute($1, $data);
+		} else {
+		  my $isa = UNIVERSAL::isa($data, 'ARRAY');
+			my $child = $isa ? $name : $element->createElement( $name );
+			$class->_adapt_child( $child, $data, $element );
+		}
+	}
+	return $element;
+}
+
+# Adapt an ARRAY ref into XML
+sub _adapt_array
+{
+	my ($class, $name, $array, $parent) = @_;
+
+	foreach my $data (@{$array}) {
+		my $isa = UNIVERSAL::isa($data, 'ARRAY');
+		my $child = $isa ? $name : $parent->createElement( $name );
+		$class->_adapt_child( $child, $data, $parent );
+	}
+	return $parent;
+}
+
+# Adapt a SCALAR into XML
+sub _adapt_scalar
+{
+	my ($self, $element, $scalar) = @_;
+	if(defined($scalar)) {
+		my $result = $element->createElement( '#cdata-entity', text => scalar( $scalar ) );
+	}
+	return $element;
+}
 
 =head2 $object->extension()
 	
@@ -165,8 +247,8 @@ sub xmlify
 =cut
 sub extension
 {
-    my ($self) = @_;
-    return $self->{'-extension'};
+	my ($self) = @_;
+	return $self->{'-extension'};
 }
 
 
@@ -184,21 +266,21 @@ sub namespace  { shift->_option('namespace',  @_); }
   Document localName
 
 =cut
-sub name       { shift->_option('name',       @_); }
+sub name	   { shift->_option('name',	   @_); }
 
 =head2 $object->doctype()
 
   Document Type object
 
 =cut
-sub doctype    { shift->_option('doctype',    @_); }
+sub doctype	{ shift->_option('doctype',	@_); }
 
 =head2 $object->version()
 
   XML Version
 
 =cut
-sub version    { shift->_option('version',    @_); }
+sub version	{ shift->_option('version',	@_); }
 
 =head2 $object->encoding()
 
@@ -225,23 +307,20 @@ Returns the document type in an xml header form.
 =cut
 sub _serialise_doctype
 {
-    my ($self, %p) = @_;
-    my $sep = $p{'seperator'};
-    my $type = $self->documentType;
-	croak "Unable to serialise document, doctype is not defined" if not $type;
+	my ($self, %p) = @_;
+	my $sep = $p{'seperator'};
+	my $type = $self->documentType();
+	return '' if not $type;
 
-    my $id;
-    if ($type->publicId) {
+	my $id;
+	if ($type->publicId) {
 		$id = 'PUBLIC "'.$type->publicId.'"';
 		$id .= ($type->systemId ? $sep.' "'.$type->systemId.'"' : '');   
-    } else {
-		warn "I'm not returning a doctype because there is n public id: ".$type->publicId;
+	} else {
+		#warn "I'm not returning a doctype because there is n public id: ".$type->publicId;
 		return '';
 	}
 
-#	if($type->systemId) {
-#		$id = ' SYSTEM "'.$type->systemId.'"';
-#	}
 	my $extension = $self->_serialise_extension( seperator => $sep );
 	$type = $type->name;
 	warn "no TYPE defined!" if not defined($type);
@@ -303,7 +382,7 @@ sub _element_handle
 	} elsif($type eq '#comment') {
 		return XML::DOM2::Element::Comment->new( delete($opts{'text'}), %opts);
 	} elsif($type eq '#cdata-entity') {
-		return XML::DOM2::Element::CDATA->new(%opts);
+		return XML::DOM2::Element::CDATA->new(delete($opts{'text'}), %opts);
 	}
 	return XML::DOM2::Element->new( $type, %opts );
 }
@@ -335,7 +414,13 @@ sub _can_contain_element { 1 }
   Returns the doctype name or 'xml' as default, can be extended.
 
 =cut
-sub _document_name { return shift->doctype->name || 'xml'; }
+sub _document_name {
+	my ($self) = @_;
+	if($self->{'baseTag'}) {
+		return $self->{'baseTag'};
+	}
+	return $self->doctype()->name() || 'xml';
+}
 
 =head2 $object->_credit_comment()
 

@@ -57,17 +57,17 @@ sub xmlify
 
 	if($self->hasChildren or $self->hasCDATA) {
 		$xml .= $self->_serialise_open_tag($ns);
-		if($self->hasChildren) {
+		if($self->hasChildren()) {
 			foreach my $child ($self->getChildren) {
 				$xml .= $child->xmlify(
 						indent    => $indent,
 						level     => $level+1,
 						seperator => $sep,
-						);
+					);
 			}
 			$xml .= $sep.($indent x $level);
 		} else {
-			$xml .= $self->cdata->text;
+			$xml .= $self->cdata->text();
 		}
 		$xml .= $self->_serialise_close_tag();
 	} else {
@@ -141,8 +141,9 @@ sub _can_contain_attributes { 1 }
 sub _serialise_open_tag
 {
 	my ($self) = @_;
-	my $name = $self->name;
-	my $at=' '.$self->_serialise_attributes if $self->hasAttributes;
+	my $name = $self->name();
+	my $at = $self->hasAttributes() ? ' '.$self->_serialise_attributes() : '';
+	return '' if not defined $name;
 	return "<$name$at>";
 }
 
@@ -154,7 +155,7 @@ sub _serialise_open_tag
 sub _serialise_tag
 {
 	my ($self) = @_;
-	my $name = $self->name;
+	my $name = $self->name();
 	my $at= $self->hasAttributes ? ' '.$self->_serialise_attributes : '';
 	return "<$name$at \/>";
 }
@@ -167,7 +168,7 @@ sub _serialise_tag
 sub _serialise_close_tag
 {
 	my ($self) = @_;
-	my $name = $self->name;
+	my $name = $self->name();
 	return "</$name>";
 }
 

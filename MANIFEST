@@ -18,6 +18,8 @@ lib/XML/DOM2/Element/DocumentType.pm
 lib/XML/DOM2/Element/Comment.pm
 lib/XML/DOM2/Parser.pm
 t/00-load.t
+t/01-xml-load.t
+t/02-xml-generate.t
 t/boilerplate.t
 t/pod-coverage.t
 t/pod.t
